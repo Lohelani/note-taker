@@ -13,26 +13,27 @@ router.get("/api/notes", (req, res) => {
     return res.json(notes)
 })
 
-router.post("/api/notes", function(req, res) {
+router.post("/api/notes", function (req, res) {
     let newNotes = req.body;
-  
+    let note = JSON.parse(notes)
+    //parse?
     console.log(newNotes);
-  
-    notes.push(newNotes);
-  
-    let note = JSON.stringify(notes)
 
-    writeFileAsync("./db/db.json", note, function(){
+    notes.push(newNotes);
+
+
+
+    writeFileAsync("./db/db.json", note, function () {
         return res.json(true)
     })
 
-    // res.json(newNotes);
+    //res.json(newNotes);
 
-  });
+});
 router.get("/notes", function (req, res) {
     //save as variable then parse so it shows up on page
     return readFileAsync('db/db.json', 'utf-8')
-   
+
 });
 
 router.post("/notes", function (req, res) {
@@ -40,17 +41,17 @@ router.post("/notes", function (req, res) {
     var newText = req.body.text;
     var newNote = { newTitle, newText, id: uuidv4() };
     console.log(newNote);
-    
-    return writeFileAsync('db/db.json', JSON.stringify(newNote))
+
+    return fs.appendFileSync('db/db.json', JSON.stringify(newNote))
     // (bodyPars.urlencoded({
     //     extended: true
     //   }));
-    
+
 });
 
 
 // router.use(bodyPars.json());
-    
+
 // router.use(bodyPars.urlencoded({ 
 //     extended: true
 // }));
