@@ -7,47 +7,81 @@ const { v4: uuidv4 } = require('uuid');
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
 
-let notes = require("../db/db.json")
+//let notes = require("../db/db.json")
+
+function readNotes() {
+    return readFileAsync("./db/db.json", "utf8");
+}
 
 router.get("/api/notes", (req, res) => {
-    return res.json(notes)
-})
+    readNotes().then(notes => {
+        notes = JSON.parse(notes)
+        res.json(notes)
+    })
 
-router.post("/api/notes", function (req, res) {
+});
+
+router.post("/api/notes", (req, res) => {
     let newNotes = req.body;
-    let note = JSON.parse(notes)
+
+
+    var title = req.body.title;
+    var text = req.body.text;
+    var newNote = { title, text, id: uuidv4() };
+    //     console.log(newNote);
     //parse?
     console.log(newNotes);
 
-    notes.push(newNotes);
 
+    readNotes().then(notes => {
+        notes = JSON.parse(notes)
+        notes.push(newNote)
 
-
-    writeFileAsync("./db/db.json", note, function () {
-        return res.json(true)
+        writeFileAsync("./db/db.json", JSON.stringify(notes)).then(response => res.json(true)).catch(err => console.log(err))
     })
+    /*
+    app.get("/api/characters", function(req, res) {
+        return res.json(characters);
+      });*/
+
+
+
 
     //res.json(newNotes);
 
 });
-router.get("/notes", function (req, res) {
-    //save as variable then parse so it shows up on page
-    return readFileAsync('db/db.json', 'utf-8')
 
-});
+router.delete('/api/notes/:id', (req, res) => {
+    let id = req.params.id;
+    readNotes().then(notes => {
+        notes = JSON.parse(notes)
 
-router.post("/notes", function (req, res) {
-    var newTitle = req.body.title;
-    var newText = req.body.text;
-    var newNote = { newTitle, newText, id: uuidv4() };
-    console.log(newNote);
+        let newArr = notes.filter(note => {
+            return note.id !== id;
+        })
 
-    return fs.appendFileSync('db/db.json', JSON.stringify(newNote))
-    // (bodyPars.urlencoded({
-    //     extended: true
-    //   }));
+        writeFileAsync("./db/db.json", JSON.stringify(newArr)).then(response => res.json(true)).catch(err => console.log(err))
 
-});
+    })
+})
+// router.get("/notes", (req, res) => {
+//     //save as variable then parse so it shows up on page
+//     return readFileAsync('db/db.json', 'utf-8')
+
+// });
+// //
+// router.post("/notes", (req, res) => {
+//     var newTitle = req.body.title;
+//     var newText = req.body.text;
+//     var newNote = { newTitle, newText, id: uuidv4() };
+//     console.log(newNote);
+
+//     return fs.appendFileSync('db/db.json', JSON.stringify(newNote))
+//     // (bodyPars.urlencoded({
+//     //     extended: true
+//     //   }));
+
+// });
 
 
 // router.use(bodyPars.json());
