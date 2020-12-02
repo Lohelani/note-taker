@@ -21,7 +21,7 @@ Completion of this app was accomplished by using get, post, and delete methods. 
 * CSS
 * HTML
 * Node
-_Dependencies:_
+### _Dependencies:_
 * Express
 * util
 * router
